@@ -3,14 +3,13 @@ import { Provider } from 'react-redux'
 import { BrowserRouter } from 'react-router-dom'
 import { store } from './store'
 import './globals.css'
+import MailPage from './pages/mail/page'
 
 const App: FC = _props => {
   return (
     <Provider store={store}>
       <BrowserRouter>
-        <div className="bg-blue-500 h-[100%] w-[100%]">
-          <span>Template</span>
-        </div>
+        <MailPage/>
       </BrowserRouter>
     </Provider>
   )

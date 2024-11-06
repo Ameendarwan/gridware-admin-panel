@@ -1,7 +1,11 @@
-const path = require('path')
-const { ProvidePlugin, DefinePlugin } = require('webpack')
+const path = require('path');
+const { ProvidePlugin, DefinePlugin } = require('webpack');
+const TerserWebpackPlugin = require('terser-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
+  mode: 'production',
   entry: {
     app: path.join(__dirname, '../src', 'index.tsx'),
   },
@@ -16,58 +20,77 @@ module.exports = {
     alias: {
       process: 'process/browser',
       '@app': path.resolve(__dirname, '../src'),
+      '@/components': path.resolve(__dirname, '../src/components'),
+      '@/lib': path.resolve(__dirname, '../src/lib'),
+      '@/styles': path.resolve(__dirname, '../src/styles'),
     },
-    // Redirect module requests when normal resolving fails
     fallback: {
       'process/browser': require.resolve('process/browser'),
     },
   },
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+    },
+    runtimeChunk: {
+      name: 'runtime',
+    },
+    minimize: true,
+    minimizer: [
+      new TerserWebpackPlugin({
+        terserOptions: {
+          compress: {
+            drop_console: true,
+          },
+        },
+      }),
+      new CssMinimizerPlugin(),
+    ],
+  },
+  cache: {
+    type: 'filesystem',
+  },
   module: {
     rules: [
-      // Vanilla JS
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         use: ['babel-loader'],
       },
-      // Typescript
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
         use: [
           {
             loader: 'ts-loader',
+            options: {
+              transpileOnly: true,
+            },
           },
         ],
       },
-      // Images
       {
         test: /\.(?:ico|gif|png|jpg|jpeg)$/i,
         exclude: /node_modules/,
-        type: 'asset/resource',
+        type: 'asset',
+        parser: {
+          dataUrlCondition: {
+            maxSize: 10 * 1024,
+          },
+        },
       },
-      // Fonts
       {
         test: /\.(woff(2)?|eot|ttf|otf|svg)$/,
         exclude: /node_modules/,
-        type: 'asset/resource',
-      },
-      // SVG as resource
-      {
-        test: /\.svg$/i,
-        exclude: /node_modules/,
         type: 'asset',
-        resourceQuery: /url/, // *.svg?url
       },
-      // SVG as React Component
       {
         test: /\.svg$/i,
         exclude: /node_modules/,
         issuer: /\.[jt]sx?$/,
-        resourceQuery: { not: [/url/] }, // exclude react component if *.svg?url
+        resourceQuery: { not: [/url/] },
         use: '@svgr/webpack',
       },
-      // CSS loader
       {
         test: /\.css$/,
         use: [
@@ -86,6 +109,7 @@ module.exports = {
     ],
   },
   plugins: [
+    new CleanWebpackPlugin(),
     new ProvidePlugin({
       process: 'process/browser',
     }),

@@ -15,12 +15,13 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "downlevelIteration": true,
-    "baseUrl": ".",
+    "baseUrl": "src",
     "paths": {
-      "@app/*": ["src/*"],
-      "@test/*": ["test/*"]
+      "@/app/*": ["app/*"],
+      "@/components/*": ["components/*"],
+      "@/lib/*": ["lib/*"],
+      "@/styles/*": ["styles/*"]
     },
-    // Explicitly include Jest DOM types for vitest/expect to compile properly
     "types": ["@testing-library/jest-dom"]
   },
   "include": ["src/**/*"],
