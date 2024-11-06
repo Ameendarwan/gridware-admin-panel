@@ -75,4 +75,4 @@ Install these extension for code-completion and linting in the IDE:
 
 - **ESLint** (by Microsoft) to enforce **Code Quality Rules**
 - **Prettier** (by Prettier) to enforce **JS/TS Formatting Rules**
-- **Tailwind CSS IntelliSense** (by Tailwind) for CSS tooling **CSS tooling**
+- **Tailwind CSS IntelliSense** (by Tailwind) for **CSS tooling**
