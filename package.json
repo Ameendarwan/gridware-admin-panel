@@ -19,7 +19,7 @@
     "test": "vitest",
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage",
-    "prepare": "husky"
+    "prepare": "husky install"
   },
   "author": "Ameen Darwan",
   "license": "ISC",
