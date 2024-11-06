@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 
 /**
  * Converts a word into plural form if appropriate

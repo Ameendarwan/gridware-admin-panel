@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { describe, it, expect } from 'vitest'
 import App from './App'
 import { render, screen } from '../tests/utils'

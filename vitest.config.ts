@@ -1,6 +1,6 @@
 import { configDefaults, defineConfig } from 'vitest/config'
 
-const testExclusions = ['node_modules', 'config', '__mocks__', '.eslintrc.js', '**/*.styles.ts', '**/*.types.ts', '**/types.ts', '**/index.{ts,tsx}', '**/*.d.ts']
+const testExclusions = ['node_modules', 'config', '__mocks__', '.eslintrc.json', '**/*.styles.ts', '**/*.types.ts', '**/types.ts', '**/index.{ts,tsx}', '**/*.d.ts']
 
 export default defineConfig({
   test: {

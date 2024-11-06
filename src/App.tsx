@@ -5,6 +5,7 @@ import { store } from './store'
 import './globals.css'
 
 const App: FC = _props => {
+  const unusedVariable = 42;
   return (
     <Provider store={store}>
       <BrowserRouter>

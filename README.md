@@ -37,7 +37,7 @@ Fork the project and run `npm run install`.
 │   └── index.tsx               # webpack entry point
 └── tests                       # tests utility and setup
 └── .babelrc                    # compiler config
-└── .eslintrc.js                # code quality config
+└── .eslintrc.json                # code quality config
 └── .prettierrc                 # logic formatting config
 └── .stylelint                  # style formatting config
 └── jest.config.ts              # testing config
