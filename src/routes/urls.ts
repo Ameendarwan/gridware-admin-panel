@@ -1,4 +1,3 @@
-
 export const urls = {
   home: '/',
   accessDenied: '/access-denied',

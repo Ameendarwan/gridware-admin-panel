@@ -14,7 +14,7 @@ module.exports = [
     ],
   },
   {
-    files: ["**/*.{js,ts,jsx,tsx}"],
+    files: ['**/*.{js,ts,jsx,tsx}'],
     languageOptions: {
       parser: require('@typescript-eslint/parser'),
       ecmaVersion: 'latest',
@@ -57,4 +57,4 @@ module.exports = [
       'no-restricted-exports': 'off',
     },
   },
-];
+]

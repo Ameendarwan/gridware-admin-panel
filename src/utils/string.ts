@@ -1,4 +1,3 @@
-
 /**
  * Converts a word into plural form if appropriate
  * @param str The word to pluralize
@@ -10,14 +9,14 @@ export const pluralize = (str: string, count: number) => (count === 1 ? str : `$
 
 export const joinArrayWithCommas = (arr: string[]): string => {
   if (arr.length === 0) {
-    return ""
+    return ''
   }
   if (arr.length === 1) {
     return arr[0]
   }
   if (arr.length === 2) {
-    return arr.join(" and ")
+    return arr.join(' and ')
   }
   const lastValue = arr.pop() as string // Remove the last value
-  return `${arr.join(", ")}, and ${lastValue}`
+  return `${arr.join(', ')}, and ${lastValue}`
 }

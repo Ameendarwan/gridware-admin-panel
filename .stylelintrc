@@ -1,7 +1,5 @@
 {
-  "extends": [
-    "stylelint-config-recommended"
-  ],
+  "extends": ["stylelint-config-recommended"],
   "overrides": [
     {
       "files": ["**/*.{js,ts}"],
