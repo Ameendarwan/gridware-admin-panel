@@ -7,6 +7,7 @@ This project has been bootstrapped with:
 - Redux Toolkit
 - React Router
 - Tailwind
+- Husky
 - Stylelint
 - Webpack
 - Babel
@@ -24,6 +25,7 @@ Fork the project and run `npm run install`.
 
 ```
 ├── build                       # output from compilation
+├── husky                       # pre-commit checks
 ├── config                      # webpack config files
 ├── public                      # public files
 ├── src                         # application code
