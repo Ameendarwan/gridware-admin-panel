@@ -1,16 +1,20 @@
-import { Mail } from '../data'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { Button } from '@/components/ui/button'
+import { Mail } from 'mock/data/data'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/Tooltip/Tooltip'
+import { Button } from '@/components/Button/Button'
 import { Archive, ArchiveX, Calendar, Clock, Forward, MoreVertical, Reply, ReplyAll, Trash2 } from 'lucide-react'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/Popover/Popover'
 import { addDays, addHours, format, nextSaturday } from 'date-fns'
-import { Separator } from '@/components/ui/separator'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Textarea } from '@/components/ui/textarea'
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
-
+import { Separator } from '@/components/Separator/Separator'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/DropdownMenu/DropdownMenu'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/Avatar/Avatar'
+import { Textarea } from '@/components/TextArea/Textarea'
+import { Label } from '@/components/Label/Label'
+import { Switch } from '@/components/Switch/Switch'
 
 interface MailDisplayProps {
   mail: Mail | null
@@ -65,41 +69,21 @@ const MailDisplay = ({ mail }: MailDisplayProps) => {
                 <div className="flex flex-col gap-2 border-r px-2 py-4">
                   <div className="px-4 text-sm font-medium">Snooze until</div>
                   <div className="grid min-w-[250px] gap-1">
-                    <Button
-                      variant="ghost"
-                      className="justify-start font-normal"
-                    >
-                      Later today{" "}
-                      <span className="ml-auto text-muted-foreground">
-                        {format(addHours(today, 4), "E, h:m b")}
-                      </span>
+                    <Button variant="ghost" className="justify-start font-normal">
+                      Later today{' '}
+                      <span className="ml-auto text-muted-foreground">{format(addHours(today, 4), 'E, h:m b')}</span>
                     </Button>
-                    <Button
-                      variant="ghost"
-                      className="justify-start font-normal"
-                    >
+                    <Button variant="ghost" className="justify-start font-normal">
                       Tomorrow
-                      <span className="ml-auto text-muted-foreground">
-                        {format(addDays(today, 1), "E, h:m b")}
-                      </span>
+                      <span className="ml-auto text-muted-foreground">{format(addDays(today, 1), 'E, h:m b')}</span>
                     </Button>
-                    <Button
-                      variant="ghost"
-                      className="justify-start font-normal"
-                    >
+                    <Button variant="ghost" className="justify-start font-normal">
                       This weekend
-                      <span className="ml-auto text-muted-foreground">
-                        {format(nextSaturday(today), "E, h:m b")}
-                      </span>
+                      <span className="ml-auto text-muted-foreground">{format(nextSaturday(today), 'E, h:m b')}</span>
                     </Button>
-                    <Button
-                      variant="ghost"
-                      className="justify-start font-normal"
-                    >
+                    <Button variant="ghost" className="justify-start font-normal">
                       Next week
-                      <span className="ml-auto text-muted-foreground">
-                        {format(addDays(today, 7), "E, h:m b")}
-                      </span>
+                      <span className="ml-auto text-muted-foreground">{format(addDays(today, 7), 'E, h:m b')}</span>
                     </Button>
                   </div>
                 </div>
@@ -165,9 +149,9 @@ const MailDisplay = ({ mail }: MailDisplayProps) => {
                 <AvatarImage alt={mail.name} />
                 <AvatarFallback>
                   {mail.name
-                    .split(" ")
-                    .map((chunk) => chunk[0])
-                    .join("")}
+                    .split(' ')
+                    .map(chunk => chunk[0])
+                    .join('')}
                 </AvatarFallback>
               </Avatar>
               <div className="grid gap-1">
@@ -179,36 +163,21 @@ const MailDisplay = ({ mail }: MailDisplayProps) => {
               </div>
             </div>
             {mail.date && (
-              <div className="ml-auto text-xs text-muted-foreground">
-                {format(new Date(mail.date), "PPpp")}
-              </div>
+              <div className="ml-auto text-xs text-muted-foreground">{format(new Date(mail.date), 'PPpp')}</div>
             )}
           </div>
           <Separator />
-          <div className="flex-1 whitespace-pre-wrap p-4 text-sm">
-            {mail.text}
-          </div>
+          <div className="flex-1 whitespace-pre-wrap p-4 text-sm">{mail.text}</div>
           <Separator className="mt-auto" />
           <div className="p-4">
             <form>
               <div className="grid gap-4">
-                <Textarea
-                  className="p-4"
-                  placeholder={`Reply ${mail.name}...`}
-                />
+                <Textarea className="p-4" placeholder={`Reply ${mail.name}...`} />
                 <div className="flex items-center">
-                  <Label
-                    htmlFor="mute"
-                    className="flex items-center gap-2 text-xs font-normal"
-                  >
-                    <Switch id="mute" aria-label="Mute thread" /> Mute this
-                    thread
+                  <Label htmlFor="mute" className="flex items-center gap-2 text-xs font-normal">
+                    <Switch id="mute" aria-label="Mute thread" /> Mute this thread
                   </Label>
-                  <Button
-                    onClick={(e) => e.preventDefault()}
-                    size="sm"
-                    className="ml-auto"
-                  >
+                  <Button onClick={e => e.preventDefault()} size="sm" className="ml-auto">
                     Send
                   </Button>
                 </div>
@@ -217,12 +186,10 @@ const MailDisplay = ({ mail }: MailDisplayProps) => {
           </div>
         </div>
       ) : (
-        <div className="p-8 text-center text-muted-foreground">
-          No message selected
-        </div>
+        <div className="p-8 text-center text-muted-foreground">No message selected</div>
       )}
     </div>
   )
 }
 
-export default MailDisplay;
+export default MailDisplay

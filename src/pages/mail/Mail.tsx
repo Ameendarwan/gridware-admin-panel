@@ -1,11 +1,11 @@
-import Mail from './components/mail';
-import { accounts, mails } from './data'
+import MailComponent from './components/MailContainer';
+import { accounts, mails } from '../../mock/data/data'
 
-const MailPage = () => {
+const Mail = () => {
   return (
     <>
       <div className="hidden flex-col md:flex">
-        <Mail
+        <MailComponent
           accounts={accounts}
           mails={mails}
           defaultLayout={undefined}
@@ -17,4 +17,4 @@ const MailPage = () => {
   )
 }
 
-export default MailPage;
+export default Mail;
