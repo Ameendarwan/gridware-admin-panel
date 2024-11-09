@@ -16,7 +16,7 @@ import { Link } from 'react-router-dom'
 
  const Sidebar = ()  => {
   return (
-    <div className="flex h-screen w-64 flex-col bg-[#1f2937] text-white">
+    <div className="flex h-screen w-64 flex-col bg-[#1d273b] text-white">
       <div className="p-4">
         <h1 className="text-lg font-semibold">Gridware Admin Panel</h1>
       </div>
