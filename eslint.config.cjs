@@ -3,6 +3,7 @@ module.exports = [
     ignores: [
       'node_modules',
       'build',
+      'dist',
       'coverage',
       '.eslintrc.js',
       'config',
