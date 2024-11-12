@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { ColDef } from 'ag-grid-community'
-import AgGrid from '@/components/AgGrid/AgGrid'
+import AgGrid from '@app/components/AgGrid/AgGrid'
 
 const Users = () => {
   const [colDefs] = useState<ColDef[]>([

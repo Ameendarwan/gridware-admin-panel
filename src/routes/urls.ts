@@ -1,6 +1,13 @@
 export const urls = {
-  home: '/',
-  accessDenied: '/access-denied',
-  login: '/login',
-  logout: '/logout',
+  login: 'login',
+  users: '/users',
+  customers: '/customers',
+  deployments: '/deployments',
+  poles: '/poles',
+  devices: '/devices',
+  spanTypes: '/span-types',
+  spans: '/spans',
+  permits: '/permits',
+  batchTracking: '/batch-tracking',
+  publicInfoCircuit: '/public-info-circuit',
 }
