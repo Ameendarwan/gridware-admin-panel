@@ -1,4 +1,4 @@
-import { Mail } from 'mock/data/data'
+import { Mail } from '@app/mock/data/data'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@app/components/Tooltip/Tooltip'
 import { Button } from '@app/components/Button/Button'
 import { Archive, ArchiveX, Calendar, Clock, Forward, MoreVertical, Reply, ReplyAll, Trash2 } from 'lucide-react'

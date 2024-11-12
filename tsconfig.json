@@ -9,7 +9,8 @@
     "jsx": "react-jsx",
     "allowJs": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "skipLibCheck":true,
+    "moduleResolution": "Bundler",
     "strict": true,
     "sourceMap": true,
     "esModuleInterop": true,
@@ -17,9 +18,9 @@
     "downlevelIteration": true,
     "baseUrl": ".",
     "paths": {
-      "@app/*": ["src/*"],
+      "@app/*": ["src/*"]
     },
-    "types": ["@testing-library/jest-dom"]
+    "types": ["@testing-library/jest-dom"],
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
