@@ -1,5 +1,6 @@
 export const urls = {
   login: 'login',
+  dashboard: '/',
   users: '/users',
   customers: '/customers',
   deployments: '/deployments',

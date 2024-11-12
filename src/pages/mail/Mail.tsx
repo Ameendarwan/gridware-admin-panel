@@ -1,5 +1,5 @@
-import MailComponent from './components/MailContainer';
-import { accounts, mails } from '../../mock/data/data'
+import MailComponent from './components/MailContainer'
+import { accounts, mails } from '@app/mock/data/data'
 
 const Mail = () => {
   return (
@@ -17,4 +17,4 @@ const Mail = () => {
   )
 }
 
-export default Mail;
+export default Mail

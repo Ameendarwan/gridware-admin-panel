@@ -4,12 +4,12 @@ This project has been bootstrapped with:
 
 - Typescript
 - React
+- Vite
 - Redux Toolkit
 - React Router
 - Tailwind
 - Husky
 - Stylelint
-- Webpack
 - Babel
 - ESLint
 - Prettier
@@ -26,9 +26,10 @@ Fork the project and run `npm run install`.
 ```
 ├── build                       # output from compilation
 ├── husky                       # pre-commit checks
-├── config                      # webpack config files
+├── config                      # public files
 ├── public                      # public files
 ├── src                         # application code
+│   ├── index.html              # html file
 │   ├── assets                  # static files
 │   ├── components              # component files
 │   └── pages                   # page files
@@ -36,7 +37,7 @@ Fork the project and run `npm run install`.
 │   └── mock                    # mock apis and data
 │   └── store                   # application state management
 │   └── utils                   # general reusabale code
-│   └── index.tsx               # webpack entry point
+│   └── main.tsx                # vite entry point
 └── tests                       # tests utility and setup
 └── .babelrc                    # compiler config
 └── .eslintrc.json              # code quality config
@@ -44,30 +45,20 @@ Fork the project and run `npm run install`.
 └── .stylelint                  # style formatting config
 └── jest.config.ts              # testing config
 └── tsconfig.json               # typescript config file
+└── vite.config.ts              # vite configuration
+└── vitest.config.ts            # vitest configuration
 
 ```
 
-## Contributing
-
 ### Development
 
-To start the project in `development` mode, run `npm run start`.
+To start the project in `development` mode, run `npm run dev`.
 
-The project runs on port `3000` by default, but this can be changed in `./config/webpack.dev.js`.
-
-### Environment Variables
-
-Environment variables are set for each `script` in `package.json`. To be used in the app, they must also be declared by the `WebpackDefinePlugin` in `./.config/webpack.common.js`.
-
-| Name     | Purpose                    |
-| -------- | -------------------------- |
-| APP_NAME | Used to reference app name |
+The project runs on port `5173` by default, but this can be changed in `./vite.config.ts`.
 
 ### Building
 
 To build the project in `prodction` mode `npm run build`.
-
-The build configuration can be modified in `./config/webpack.common.js` and `./config/webpack.prod.js`.
 
 ### IDE Configuration
 

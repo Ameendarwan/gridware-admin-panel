@@ -8,6 +8,7 @@ const Routes = () => (
   <DOMRoutes>
     {/** Authenticated Routes */}
     <Route element={<ProtectedRoute />}>
+      <Route path={urls.dashboard} element={<Users />} />
       <Route path={urls.users} element={<Users />} />
     </Route>
 
