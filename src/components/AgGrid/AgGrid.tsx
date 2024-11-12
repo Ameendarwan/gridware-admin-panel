@@ -17,9 +17,6 @@ const AgGrid = ({ rowData, colDefs }: AgGridProps) => {
       defaultColDef: {
         flex: 1,
         minWidth: 100,
-        enableValue: true,
-        enableRowGroup: true,
-        enablePivot: true,
         filter: true,
         editable: true,
         floatingFilter: true,
@@ -54,7 +51,6 @@ const AgGrid = ({ rowData, colDefs }: AgGridProps) => {
         columnDefs={colDefs}
         gridOptions={gridOptions}
         rowSelection={rowSelection}
-        sideBar={true}
         domLayout={'autoHeight'}
       />
     </div>
