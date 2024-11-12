@@ -1,20 +1,20 @@
 import { Mail } from 'mock/data/data'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/Tooltip/Tooltip'
-import { Button } from '@/components/Button/Button'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@app/components/Tooltip/Tooltip'
+import { Button } from '@app/components/Button/Button'
 import { Archive, ArchiveX, Calendar, Clock, Forward, MoreVertical, Reply, ReplyAll, Trash2 } from 'lucide-react'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/Popover/Popover'
+import { Popover, PopoverContent, PopoverTrigger } from '@app/components/Popover/Popover'
 import { addDays, addHours, format, nextSaturday } from 'date-fns'
-import { Separator } from '@/components/Separator/Separator'
+import { Separator } from '@app/components/Separator/Separator'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/DropdownMenu/DropdownMenu'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/Avatar/Avatar'
-import { Textarea } from '@/components/TextArea/Textarea'
-import { Label } from '@/components/Label/Label'
-import { Switch } from '@/components/Switch/Switch'
+} from '@app/components/DropdownMenu/DropdownMenu'
+import { Avatar, AvatarFallback, AvatarImage } from '@app/components/Avatar/Avatar'
+import { Textarea } from '@app/components/TextArea/Textarea'
+import { Label } from '@app/components/Label/Label'
+import { Switch } from '@app/components/Switch/Switch'
 
 interface MailDisplayProps {
   mail: Mail | null

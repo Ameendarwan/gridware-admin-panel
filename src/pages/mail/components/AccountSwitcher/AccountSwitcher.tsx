@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { cn } from '@/lib/utils'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select/Select'
+import { cn } from '@app/lib/utils'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@app/components/Select/Select'
 
 interface AccountSwitcherProps {
   isCollapsed: boolean

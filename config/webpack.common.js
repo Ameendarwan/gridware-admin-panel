@@ -1,11 +1,10 @@
-const path = require('path');
-const { ProvidePlugin, DefinePlugin } = require('webpack');
-const TerserWebpackPlugin = require('terser-webpack-plugin');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const path = require('path')
+const { ProvidePlugin, DefinePlugin } = require('webpack')
+const TerserWebpackPlugin = require('terser-webpack-plugin')
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
 module.exports = {
-  mode: 'production',
   entry: {
     app: path.join(__dirname, '../src', 'index.tsx'),
   },
@@ -20,9 +19,9 @@ module.exports = {
     alias: {
       process: 'process/browser',
       '@app': path.resolve(__dirname, '../src'),
-      '@/components': path.resolve(__dirname, '../src/components'),
-      '@/lib': path.resolve(__dirname, '../src/lib'),
-      '@/styles': path.resolve(__dirname, '../src/styles'),
+      '@app/components': path.resolve(__dirname, '../src/components'),
+      '@app/lib': path.resolve(__dirname, '../src/lib'),
+      '@app/styles': path.resolve(__dirname, '../src/styles'),
     },
     fallback: {
       'process/browser': require.resolve('process/browser'),
@@ -36,16 +35,7 @@ module.exports = {
       name: 'runtime',
     },
     minimize: true,
-    minimizer: [
-      new TerserWebpackPlugin({
-        terserOptions: {
-          compress: {
-            drop_console: true,
-          },
-        },
-      }),
-      new CssMinimizerPlugin(),
-    ],
+    minimizer: [new CssMinimizerPlugin()],
   },
   cache: {
     type: 'filesystem',

@@ -1,9 +1,9 @@
 import { ComponentProps } from 'react'
 import { formatDistanceToNow } from 'date-fns/formatDistanceToNow'
-import { cn } from '@/lib/utils'
-import { Mail } from 'mock/data/data'
-import { ScrollArea } from '@/components/ScrollArea/ScrollArea'
-import { Badge } from '@/components/Badge/Badge'
+import { cn } from '@app/lib/utils'
+import { Mail } from '@app/mock/data/data'
+import { ScrollArea } from '@app/components/ScrollArea/ScrollArea'
+import { Badge } from '@app/components/Badge/Badge'
 
 interface MailListProps {
   items: Mail[]

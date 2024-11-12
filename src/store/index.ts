@@ -1,12 +1,12 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import { setupListeners } from '@reduxjs/toolkit/query'
-import sessionReducer from './slices/session'
+import authReducer from './slices/auth'
 
 /**
  * Combine all reducers into a single root reducer, extend as needed
  */
 export const rootReducer = combineReducers({
-  session: sessionReducer,
+  auth: authReducer,
 })
 
 /**

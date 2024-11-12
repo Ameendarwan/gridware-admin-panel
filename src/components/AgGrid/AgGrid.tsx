@@ -4,7 +4,7 @@ import React, { useCallback, useMemo, useRef } from 'react'
 import { AgGridReact } from 'ag-grid-react'
 import { ColDef, GridOptions } from 'ag-grid-community'
 import { RowSelectionOptions } from 'ag-grid-community/dist/types/core/entities/gridOptions'
-import { Button } from '@/components/Button/Button'
+import { Button } from '@app/components/Button/Button'
 
 interface AgGridProps {
   rowData: any[]
