@@ -1,25 +1,42 @@
-import { Laugh } from 'lucide-react'
-import { useForm } from 'react-hook-form'
-import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import { Form, FormItem, FormField, FormLabel, FormControl, FormMessage } from '@app/components/Form/Form'
-import { Input } from '@app/components/Input/Input'
-import { Button } from '@app/components/Button/Button'
-import { userLoggedIn } from '@app/store/slices/auth'
-import { urls } from '@app/routes/urls'
-import { LoginFormValues } from './types'
+import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { Form, FormItem, FormField, FormLabel, FormControl, FormMessage } from '@app/components/Form/Form';
+import { Input } from '@app/components/Input/Input';
+import { userDetails, userLoggedIn } from '@app/store/slices/auth';
+import { urls } from '@app/routes/urls';
+import { LoginFormValues } from './types';
+import { GoogleLogin } from '@react-oauth/google';
+import Cookies from 'js-cookie';
+import { jwtDecode } from 'jwt-decode';
 
 const Login = () => {
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const form = useForm<LoginFormValues>()
+  const form = useForm<LoginFormValues>();
+
+  const navigateToHome = () => {
+    dispatch(userLoggedIn());
+    navigate(urls.users);
+  };
 
   const onSubmit = (data: LoginFormValues) => {
-    console.log(data)
-    dispatch(userLoggedIn())
-    navigate(urls.users)
-  }
+    console.log(data);
+    navigateToHome();
+  };
+
+  const handleSuccess = (credentialResponse: any) => {
+    const token = credentialResponse.credential;
+    const extractedUserDetails = jwtDecode(token);
+    dispatch(userDetails(extractedUserDetails));
+    Cookies.set('token', token, { secure: true, sameSite: 'Strict' });
+    navigateToHome();
+  };
+
+  const handleFailure = () => {
+    console.error('Google login failed');
+  };
 
   return (
     <div className="flex h-screen items-center justify-center bg-gray-100 font-sans leading-normal tracking-normal">
@@ -65,12 +82,10 @@ const Login = () => {
           <span className="mx-2 text-gray-500">or</span>
           <hr className="flex-grow border-gray-300" />
         </div>
-        <Button className="flex w-full items-center justify-center rounded-lg bg-gray-200 p-2 text-gray-700 transition-all duration-300 ease-in-out hover:bg-gray-300">
-          <Laugh /> <i className="fa-brands fa-google mr-2"></i> Continue with Google
-        </Button>
+        <GoogleLogin onSuccess={handleSuccess} onError={handleFailure} />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

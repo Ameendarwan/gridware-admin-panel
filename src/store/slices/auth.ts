@@ -1,26 +1,37 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit';
+import Cookies from 'js-cookie';
+import { jwtDecode } from 'jwt-decode';
 
 interface AuthState {
-  isLoggedIn: boolean
+  isLoggedIn: boolean;
+  userDetails: {
+    name?: string;
+    email?: string;
+    picture?: string;
+  };
 }
 
 const initialState: AuthState = {
-  isLoggedIn: false,
-}
+  isLoggedIn: !!Cookies.get('token'),
+  userDetails: Cookies.get('token') ? jwtDecode(Cookies.get('token') as string) : {},
+};
 
 export const AuthSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
     userLoggedIn: state => {
-      state.isLoggedIn = true
+      state.isLoggedIn = true;
     },
     userLoggedOut: state => {
-      state.isLoggedIn = false
+      state.isLoggedIn = false;
+    },
+    userDetails: (state, action) => {
+      state.userDetails = action.payload;
     },
   },
-})
+});
 
-export const { userLoggedIn, userLoggedOut } = AuthSlice.actions
+export const { userLoggedIn, userLoggedOut, userDetails } = AuthSlice.actions;
 
-export default AuthSlice.reducer
+export default AuthSlice.reducer;

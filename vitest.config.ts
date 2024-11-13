@@ -1,6 +1,6 @@
-import { configDefaults, defineConfig } from 'vitest/config'
-import path from "path"
-import react from "@vitejs/plugin-react"
+import { configDefaults, defineConfig } from 'vitest/config';
+import path from 'path';
+import react from '@vitejs/plugin-react';
 
 const testExclusions = [
   'node_modules',
@@ -12,10 +12,11 @@ const testExclusions = [
   '**/types.ts',
   '**/index.{ts,tsx}',
   '**/*.d.ts',
-]
+];
 
 export default defineConfig({
   plugins: [react()],
+  envDir: './env',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
@@ -38,4 +39,4 @@ export default defineConfig({
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
     exclude: [...configDefaults.exclude, ...testExclusions],
   },
-})
+});

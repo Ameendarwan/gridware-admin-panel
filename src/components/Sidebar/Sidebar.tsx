@@ -1,7 +1,24 @@
-import { Activity, Box, CircuitBoard, FileText, Grid, ListTodo, Network, Power, Users, Users2 } from 'lucide-react'
-import { Button } from '@app/components/Button/Button'
-import { Avatar, AvatarFallback } from '@app/components/Avatar/Avatar'
-import { Link } from 'react-router-dom'
+import {
+  Activity,
+  Box,
+  CircuitBoard,
+  FileText,
+  Grid,
+  ListTodo,
+  LogOut,
+  Network,
+  Power,
+  User,
+  Users,
+  Users2,
+} from 'lucide-react';
+import { Button } from '@app/components/Button/Button';
+import { Avatar, AvatarFallback } from '@app/components/Avatar/Avatar';
+import { Link } from 'react-router-dom';
+import Cookies from 'js-cookie';
+import { useDispatch, useSelector } from 'react-redux';
+import { userLoggedOut } from '@app/store/slices/auth';
+import { googleLogout } from '@react-oauth/google';
 
 const menuItems = [
   { label: 'Users', icon: Users, to: '#' },
@@ -14,9 +31,17 @@ const menuItems = [
   { label: 'Permits', icon: FileText, to: '#' },
   { label: 'Batch Tracking', icon: ListTodo, to: '#' },
   { label: 'Public info circuit', icon: CircuitBoard, to: '#' },
-]
+];
 
 const Sidebar = () => {
+  const dispatch = useDispatch();
+  const userDetails = useSelector((state: any) => state.auth.userDetails);
+
+  function handleLogout() {
+    googleLogout();
+    Cookies.remove('token');
+    dispatch(userLoggedOut());
+  }
   return (
     <div className="flex h-screen w-64 flex-col bg-[#1d273b] text-white">
       <div className="p-4">
@@ -36,16 +61,21 @@ const Sidebar = () => {
           </Button>
         ))}
       </nav>
-      <div className="mt-auto border-t border-white/10 p-4">
+      <div className="mt-auto flex justify-between border-t border-white/10 p-4">
         <div className="flex items-center gap-3">
           <Avatar className="rounded-[4px]">
-            <AvatarFallback className="rounded-[4px] bg-purple-600">A</AvatarFallback>
+            <AvatarFallback className="rounded-[4px] bg-purple-600">
+              <User />
+            </AvatarFallback>
           </Avatar>
-          <span className="text-sm font-medium">Ali Nasir</span>
+          <span className="text-sm font-medium">{userDetails.name}</span>
         </div>
+        <Button variant="ghost" className="text-white hover:bg-white/10" onClick={handleLogout}>
+          <LogOut className="h-5 w-5" />
+        </Button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;
