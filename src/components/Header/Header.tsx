@@ -28,7 +28,7 @@ const Header = ({ title }: { title?: string }) => {
           <Avatar className="rounded-[4px]">
             <AvatarFallback className="rounded-[4px] bg-[#686868] p-2 text-sm text-white">
               {userDetails.name
-                .split(' ')
+                ?.split(' ')
                 .map((n: any[]) => n[0])
                 .join('')
                 .toUpperCase()}
@@ -37,7 +37,7 @@ const Header = ({ title }: { title?: string }) => {
           <span className="text-sm font-medium text-gray-700">{userDetails.email}</span>
         </button>
         {isDropdownOpen && (
-          <div className="absolute right-0 top-12 w-48 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+          <div className="absolute right-0 top-12 z-50 w-48 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
             <div className="py-1">
               <button
                 onClick={handleLogout}
