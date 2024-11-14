@@ -1,79 +1,39 @@
-import {
-  Activity,
-  Box,
-  CircuitBoard,
-  FileText,
-  Grid,
-  ListTodo,
-  LogOut,
-  Network,
-  Power,
-  User,
-  Users,
-  Users2,
-} from 'lucide-react';
 import { Button } from '@app/components/Button/Button';
-import { Avatar, AvatarFallback } from '@app/components/Avatar/Avatar';
 import { Link } from 'react-router-dom';
-import Cookies from 'js-cookie';
-import { useDispatch, useSelector } from 'react-redux';
-import { userLoggedOut } from '@app/store/slices/auth';
-import { googleLogout } from '@react-oauth/google';
 
 const menuItems = [
-  { label: 'Users', icon: Users, to: '#' },
-  { label: 'Customers', icon: Users2, to: '#' },
-  { label: 'Deployments', icon: Box, to: '#' },
-  { label: 'Poles', icon: Power, to: '#' },
-  { label: 'Devices', icon: Grid, to: '#' },
-  { label: 'Span Types', icon: Activity, to: '#' },
-  { label: 'Spans', icon: Network, to: '#' },
-  { label: 'Permits', icon: FileText, to: '#' },
-  { label: 'Batch Tracking', icon: ListTodo, to: '#' },
-  { label: 'Public info circuit', icon: CircuitBoard, to: '#' },
+  { label: 'Users', iconClass: 'fa-solid fa-users', to: '#' },
+  { label: 'Customers', iconClass: 'fa-solid fa-user-tie', to: '#' },
+  { label: 'Deployments', iconClass: 'fa-solid fa-network-wired', to: '#' },
+  { label: 'Poles', iconClass: 'fa-solid fa-flag', to: '#' },
+  { label: 'Devices', iconClass: 'fa-solid fa-tablet-alt', to: '#' },
+  { label: 'Span Types', iconClass: 'fa-solid fa-ruler-combined', to: '#' },
+  { label: 'Spans', iconClass: 'fa-solid fa-ruler-horizontal', to: '#' },
+  { label: 'Permits', iconClass: 'fa-solid fa-file-alt', to: '#' },
+  { label: 'Batch Tracking', iconClass: 'fa-solid fa-tasks', to: '#' },
+  { label: 'Public info circuit', iconClass: 'fa-solid fa-link', to: '#' },
 ];
 
 const Sidebar = () => {
-  const dispatch = useDispatch();
-  const userDetails = useSelector((state: any) => state.auth.userDetails);
-
-  function handleLogout() {
-    googleLogout();
-    Cookies.remove('token');
-    dispatch(userLoggedOut());
-  }
   return (
-    <div className="flex h-screen w-64 flex-col bg-[#1d273b] text-white">
+    <div className="flex h-screen w-[181px] flex-col bg-[#3b3c4f] text-white">
       <div className="p-4">
-        <h1 className="text-lg font-semibold">Gridware Admin Panel</h1>
+        <h1 className="text-sm font-semibold">Gridware Admin Panel</h1>
       </div>
       <nav className="flex-1 space-y-1 px-2 py-4">
-        {menuItems.map(({ label, icon: Icon, to }) => (
+        {menuItems.map(({ label, iconClass, to }) => (
           <Button
             key={label}
             variant="ghost"
             className="w-full justify-start text-white hover:bg-white/10 hover:text-white"
             asChild>
             <Link to={to} className="flex items-center gap-3">
-              <Icon className="h-4 w-4" />
+              <i className={iconClass} />
               {label}
             </Link>
           </Button>
         ))}
       </nav>
-      <div className="mt-auto flex justify-between border-t border-white/10 p-4">
-        <div className="flex items-center gap-3">
-          <Avatar className="rounded-[4px]">
-            <AvatarFallback className="rounded-[4px] bg-purple-600">
-              <User />
-            </AvatarFallback>
-          </Avatar>
-          <span className="text-sm font-medium">{userDetails.name}</span>
-        </div>
-        <Button variant="ghost" className="text-white hover:bg-white/10" onClick={handleLogout}>
-          <LogOut className="h-5 w-5" />
-        </Button>
-      </div>
     </div>
   );
 };
