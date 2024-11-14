@@ -1,8 +1,9 @@
 import { Route, Routes as DOMRoutes } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
-import Login from '@app/pages/login'
+// import Login from '@app/pages/login'
 import Users from '@app/pages/users'
 import { urls } from './urls'
+import MapBox from '@app/components/MapBox'
 
 const Routes = () => (
   <DOMRoutes>
@@ -13,7 +14,7 @@ const Routes = () => (
     </Route>
 
     {/** Public Routes */}
-    <Route path={urls.login} element={<Login />} />
+    <Route path={urls.login} element={<MapBox />} />
     <Route path="*" element={<div>404</div>} />
   </DOMRoutes>
 )
