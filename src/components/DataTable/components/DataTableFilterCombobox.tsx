@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { DataTableFilterOption } from '@app/components/DataTable/data-table.types';
+import { DataTableFilterOption } from '@app/components/DataTable/DataTable.types';
 import { Popover, PopoverContent, PopoverTrigger } from '@app/components/Popover/Popover';
 import { Button } from '@app/components/Button/Button';
 import {

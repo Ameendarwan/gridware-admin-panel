@@ -15,7 +15,7 @@ import {
   type TableState,
   type VisibilityState,
 } from '@tanstack/react-table';
-import { DataTableFilterField } from '@app/components/DataTable/data-table.types';
+import { DataTableFilterField } from '@app/components/DataTable/DataTable.types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDebounce } from '@app/hooks/useDebounce';
 import { useLocation, useNavigate } from 'react-router-dom';

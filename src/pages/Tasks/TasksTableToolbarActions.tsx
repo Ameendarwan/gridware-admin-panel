@@ -2,7 +2,7 @@
 
 import { Button } from '@app/components/Button/Button';
 import { Table } from '@tanstack/react-table';
-import { exportTableToCSV } from '@app/components/DataTable/data-table.utils';
+import { exportTableToCSV } from '@app/components/DataTable/DataTable.utils';
 
 interface TasksTableToolbarActionsProps {
   table: Table<any>;

@@ -1,5 +1,5 @@
 import { Table } from '@tanstack/react-table';
-import { DataTableConfig, dataTableConfig, DataTableFilterOption } from '@app/components/DataTable/data-table.types';
+import { DataTableConfig, dataTableConfig, DataTableFilterOption } from '@app/components/DataTable/DataTable.types';
 import { useCallback, useEffect, useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@app/components/Popover/Popover';
 import { Button } from '@app/components/Button/Button';
@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@app/components/Select/Select';
-import DataTableFacetedFilter from '@app/components/DataTable/data-table-faceted-filter';
+import DataTableFacetedFilter from '@app/components/DataTable/components/DataTableFacetedFilter';
 import { Input } from '@app/components/Input/Input';
 import {
   DropdownMenu,

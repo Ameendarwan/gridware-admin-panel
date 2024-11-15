@@ -14,7 +14,7 @@ import {
 } from '@app/components/Command/Command';
 import { CheckIcon } from 'lucide-react';
 import { cn } from '@app/lib/utils';
-import { Option } from '@app/components/DataTable/data-table.types';
+import { Option } from '@app/components/DataTable/DataTable.types';
 
 interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>;

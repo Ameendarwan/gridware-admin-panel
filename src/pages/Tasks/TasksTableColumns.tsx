@@ -2,7 +2,7 @@
 
 import { ColumnDef } from '@tanstack/react-table';
 import { Checkbox } from '@app/components/Checkbox/Checkbox';
-import DataTableColumnHeader from '@app/components/DataTable/data-table-column-header';
+import DataTableColumnHeader from '@app/components/DataTable/components/DataTableColumnHeader';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@app/components/DropdownMenu/DropdownMenu';
 import { Button } from '@app/components/Button/Button';
-import { formatDate } from '@app/components/DataTable/data-table.utils';
+import { formatDate } from '@app/components/DataTable/DataTable.utils';
 
 export function getColumns(): ColumnDef<any>[] {
   return [

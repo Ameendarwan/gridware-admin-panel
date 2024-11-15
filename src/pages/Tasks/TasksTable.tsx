@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import { DataTableFilterField } from '@app/components/DataTable/data-table.types';
-import DataTable from '@app/components/DataTable/data-table';
-import DataTableAdvancedToolbar from '@app/components/DataTable/advanced/data-table-advanced-toolbar';
+import { DataTableFilterField } from '@app/components/DataTable/DataTable.types';
+import DataTable from '@app/components/DataTable/DataTable';
+import DataTableAdvancedToolbar from '@app/components/DataTable/components/DataTableAdvancedToolbar';
 import { useDataTable } from '@app/hooks/useDataTable';
 import { getColumns } from '@app/pages/Tasks/TasksTableColumns';
 import { Button } from '@app/components/Button/Button';

@@ -1,5 +1,5 @@
 import type { Column } from '@tanstack/react-table';
-import { DataTableFilterOption, Option } from '@app/components/DataTable/data-table.types';
+import { DataTableFilterOption, Option } from '@app/components/DataTable/DataTable.types';
 import {
   Command,
   CommandEmpty,

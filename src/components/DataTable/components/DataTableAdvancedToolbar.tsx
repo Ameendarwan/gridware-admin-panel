@@ -3,16 +3,16 @@
 import * as React from 'react';
 import type { Table } from '@tanstack/react-table';
 
-import { DataTableMultiFilter } from './data-table-multi-filter';
-import { DataTableFilterField, DataTableFilterOption } from '@app/components/DataTable/data-table.types';
+import { DataTableMultiFilter } from './DataTableMultiFilter';
+import { DataTableFilterField, DataTableFilterOption } from '@app/components/DataTable/DataTable.types';
 import { cn } from '@app/lib/utils';
 import { Button } from '@app/components/Button/Button';
-import DataTableViewOptions from '@app/components/DataTable/data-table-view-options';
-import DataTableFilterCombobox from '@app/components/DataTable/advanced/data-table-filter-combobox';
-import DataTableFilterItem from '@app/components/DataTable/advanced/data-table-filter-item';
+import DataTableViewOptions from '@app/components/DataTable/components/DataTableViewOptions';
+import DataTableFilterCombobox from '@app/components/DataTable/components/DataTableFilterCombobox';
+import DataTableFilterItem from '@app/components/DataTable/components/DataTableFilterItem';
 import TasksTableToolbarActions from '@app/pages/Tasks/TasksTableToolbarActions';
 import { Input } from '@app/components/Input/Input';
-import DataTableFacetedFilter from '@app/components/DataTable/data-table-faceted-filter';
+import DataTableFacetedFilter from '@app/components/DataTable/components/DataTableFacetedFilter';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@app/components/Select/Select';
 
 interface DataTableAdvancedToolbarProps<TData> extends React.HTMLAttributes<HTMLDivElement> {
