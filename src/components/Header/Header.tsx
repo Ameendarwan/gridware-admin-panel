@@ -1,11 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
 import { useDispatch, useSelector } from 'react-redux';
 import { googleLogout } from '@react-oauth/google';
 import Cookies from 'js-cookie';
 import { userLoggedOut } from '@app/store/slices/auth';
+import { useLocation } from 'react-router-dom';
+import { urls } from '@app/routes/urls';
 
-const Header = ({ title }: { title?: string }) => {
+const titles = {
+  [urls.deployments]: 'Deployments',
+  [urls.users]: 'Users',
+  [urls.customers]: 'Customers',
+  [urls.poles]: 'Poles',
+};
+
+const Header = () => {
+  const location = useLocation();
+  const [title, setTitle] = useState('');
   const dispatch = useDispatch();
   const userDetails = useSelector((state: any) => state.auth.userDetails);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -15,6 +26,12 @@ const Header = ({ title }: { title?: string }) => {
     Cookies.remove('token');
     dispatch(userLoggedOut());
   }
+
+  useEffect(() => {
+    if (location.pathname in titles) {
+      setTitle(titles[location.pathname] ?? '');
+    }
+  }, [location]);
 
   return (
     <header className="flex items-center justify-between border-b bg-white px-6 py-4">
@@ -37,7 +54,7 @@ const Header = ({ title }: { title?: string }) => {
           <span className="text-sm font-medium text-gray-700">{userDetails.email}</span>
         </button>
         {isDropdownOpen && (
-          <div className="absolute right-0 top-12 z-50 w-48 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+          <div className="absolute right-0 top-8 z-50 w-48 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
             <div className="py-1">
               <button
                 onClick={handleLogout}
