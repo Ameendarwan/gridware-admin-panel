@@ -5,6 +5,7 @@ import Users from '@app/pages/Users';
 import MapBox from '@app/components/MapBox';
 import NotFound from '@app/pages/NotFound';
 import { urls } from './urls';
+import TasksTable from '@app/pages/Tasks/TasksTable';
 
 const Routes = () => (
   <DOMRoutes>
@@ -12,6 +13,7 @@ const Routes = () => (
     <Route element={<ProtectedRoute />}>
       <Route path={urls.dashboard} element={<MapBox />} />
       <Route path={urls.users} element={<Users />} />
+      <Route path={urls.deployments} element={<TasksTable />} />
     </Route>
 
     {/** Public Routes */}
