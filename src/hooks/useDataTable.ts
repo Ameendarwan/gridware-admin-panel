@@ -16,9 +16,10 @@ import {
   type VisibilityState,
 } from '@tanstack/react-table';
 import { DataTableFilterField } from '@app/components/DataTable/DataTable.types';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDebounce } from '@app/hooks/useDebounce';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { createQueryString } from '@app/components/DataTable/DataTable.utils';
 
 interface UseDataTableProps<TData, TValue> {
   data: TData[];
@@ -57,21 +58,6 @@ export function useDataTable<TData, TValue>({
       filterableColumns: filterFields.filter(field => field.options),
     };
   }, [filterFields]);
-
-  const createQueryString = useCallback(
-    (params: Record<string, string | number | null>) => {
-      const newSearchParams = new URLSearchParams(location.search);
-      Object.entries(params).forEach(([key, value]) => {
-        if (value === null) {
-          newSearchParams.delete(key);
-        } else {
-          newSearchParams.set(key, String(value));
-        }
-      });
-      return newSearchParams.toString();
-    },
-    [location.search]
-  );
 
   const initialColumnFilters: ColumnFiltersState = useMemo(() => {
     return Array.from(searchParams.entries()).reduce<ColumnFiltersState>((filters, [key, value]) => {

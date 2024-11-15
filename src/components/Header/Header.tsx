@@ -12,6 +12,7 @@ const titles = {
   [urls.users]: 'Users',
   [urls.customers]: 'Customers',
   [urls.poles]: 'Poles',
+  [urls.dashboard]: '',
 };
 
 const Header = () => {

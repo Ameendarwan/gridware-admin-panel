@@ -1,6 +1,6 @@
 import { Table } from '@tanstack/react-table';
 import { DataTableConfig, dataTableConfig, DataTableFilterOption } from '@app/components/DataTable/DataTable.types';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@app/components/Popover/Popover';
 import { Button } from '@app/components/Button/Button';
 import { Separator } from '@app/components/Separator/Separator';
@@ -22,6 +22,7 @@ import {
 } from '@app/components/DropdownMenu/DropdownMenu';
 import { useDebounce } from '@app/hooks/useDebounce';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { createQueryString } from '@app/components/DataTable/DataTable.utils';
 
 interface DataTableMultiFilterProps<TData> {
   table: Table<TData>;
@@ -121,31 +122,13 @@ const MultiFilterRow = <TData,>({
     }
   }, [selectedOption?.options.length]);
 
-  // Create query string
-  const createQueryString = useCallback(
-    (params: Record<string, string | number | null>) => {
-      const newSearchParams = new URLSearchParams(location.search);
-
-      for (const [key, value] of Object.entries(params)) {
-        if (value === null) {
-          newSearchParams.delete(key);
-        } else {
-          newSearchParams.set(key, String(value));
-        }
-      }
-
-      return newSearchParams.toString();
-    },
-    [location.search]
-  );
-
   // Update query string based on debounceValue
   useEffect(() => {
     const newSearchParams = createQueryString({
       [selectedOption?.value ?? '']: debounceValue.length > 0 ? `${debounceValue}.${filterVariety}` : null,
     });
     navigate(`${location.pathname}?${newSearchParams}`, { replace: true, state: { scroll: false } });
-  }, [debounceValue, filterVariety, selectedOption?.value, createQueryString, navigate, location.pathname]);
+  }, [debounceValue, filterVariety, selectedOption?.value]);
 
   // Update operator query string
   useEffect(() => {
@@ -153,7 +136,7 @@ const MultiFilterRow = <TData,>({
       const newSearchParams = createQueryString({ operator: operator.value });
       navigate(`${location.pathname}?${newSearchParams}`, { replace: true, state: { scroll: false } });
     }
-  }, [operator?.value, createQueryString, navigate, location.pathname]);
+  }, [operator?.value]);
 
   return (
     <div className="flex items-center space-x-2">
