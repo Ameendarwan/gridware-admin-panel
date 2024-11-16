@@ -106,7 +106,7 @@ const DataTableAdvancedToolbar = <TData,>({
   }
 
   return (
-    <div className={cn('flex w-full flex-col space-y-2.5 overflow-auto pl-3 pr-3 pt-3', className)} {...props}>
+    <div className={cn('flex w-full flex-col space-y-2.5 overflow-auto p-2 pt-4', className)} {...props}>
       <div className="items-center">
         <div className="float-left flex items-center gap-2">
           <div className="flex items-center space-x-2">
