@@ -24,11 +24,12 @@ const DataTableViewOptions = <TData,>({ table }: DataTableViewOptionsProps<TData
           variant="outline"
           size="sm"
           className="ml-auto hidden bg-[#3B3C4F] text-white lg:flex">
-          <i className="fa-solid fa-eye size-4"></i>
+          <i className="fa-solid fa-eye size-4" />
           Show/Hide Columns
+          <i className="fa-solid fa-angle-down" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-40">
+      <DropdownMenuContent align="start" className="w-[11.6rem]">
         <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {table

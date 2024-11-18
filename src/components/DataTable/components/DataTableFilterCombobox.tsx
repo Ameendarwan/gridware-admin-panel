@@ -31,7 +31,7 @@ const DataTableFilterCombobox = <TData,>({
 }: DataTableFilterComboboxProps<TData>) => {
   const [value, setValue] = React.useState('');
   const [open, setOpen] = React.useState(false);
-  const [selectedOption, setSelectedOption] = React.useState<DataTableFilterOption<TData>>(
+  const [, setSelectedOption] = React.useState<DataTableFilterOption<TData>>(
     options[0] ?? ({} as DataTableFilterOption<TData>)
   );
 
@@ -70,33 +70,13 @@ const DataTableFilterCombobox = <TData,>({
                     {option.options.length > 0 ? (
                       <i className="fa-solid fa-chevron-down mr-2 size-4" />
                     ) : (
-                      <i className="fa-solid fa-t mr-2 size-4" />
+                      <i className="fa-solid fa-notes-medical mr-2 size-4" />
                     )}
                     {option.label}
                   </CommandItem>
                 ))}
             </CommandGroup>
             <CommandSeparator />
-            <CommandGroup>
-              <CommandItem
-                onSelect={() => {
-                  setOpen(false);
-                  setSelectedOptions([
-                    ...selectedOptions,
-                    {
-                      id: crypto.randomUUID(),
-                      label: selectedOption?.label ?? '',
-                      value: selectedOption?.value ?? '',
-                      options: selectedOption?.options ?? [],
-                      isMulti: true,
-                    },
-                  ]);
-                  onSelect();
-                }}>
-                <i className="fa-solid fa-plus mr-2 size-4" />
-                Advanced filter
-              </CommandItem>
-            </CommandGroup>
           </CommandList>
         </Command>
       </PopoverContent>

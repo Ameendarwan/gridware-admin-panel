@@ -15,7 +15,8 @@ import DataTableAdvancedFacetedFilter from '@app/components/DataTable/components
 import { Input } from '@app/components/Input/Input';
 import { useDebounce } from '@app/hooks/useDebounce';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { createQueryString } from '@app/components/DataTable/DataTable.utils';
 
 interface DataTableFilterItemProps<TData> {
   table: Table<TData>;
@@ -50,24 +51,6 @@ const DataTableFilterItem = <TData,>({
     operators.find(c => c.value === filterOperator) ?? operators[0]
   );
 
-  // Create query string
-  const createQueryString = useCallback(
-    (params: Record<string, string | number | null>) => {
-      const newSearchParams = new URLSearchParams(location.search);
-
-      for (const [key, value] of Object.entries(params)) {
-        if (value === null) {
-          newSearchParams.delete(key);
-        } else {
-          newSearchParams.set(key, String(value));
-        }
-      }
-
-      return newSearchParams.toString();
-    },
-    [location.search]
-  );
-
   // Update query string
   useEffect(() => {
     if (selectedOption.options.length > 0) {
@@ -82,10 +65,8 @@ const DataTableFilterItem = <TData,>({
       });
       navigate(`${location.pathname}?${newSearchParams}`, { replace: true });
     }
-  }, [selectedOption, debounceValue, selectedOperator, navigate, location.pathname, filterValues, createQueryString]);
+  }, [selectedOption, debounceValue, selectedOperator]);
 
-  // @ts-ignore
-  // @ts-ignore
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>

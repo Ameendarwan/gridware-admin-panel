@@ -1,8 +1,6 @@
 'use client';
 
-import * as React from 'react';
 import type { Table } from '@tanstack/react-table';
-
 import { DataTableMultiFilter } from './DataTableMultiFilter';
 import { DataTableFilterField, DataTableFilterOption } from '@app/components/DataTable/DataTable.types';
 import { cn } from '@app/lib/utils';
@@ -14,31 +12,56 @@ import TasksTableToolbarActions from '@app/pages/Tasks/TasksTableToolbarActions'
 import { Input } from '@app/components/Input/Input';
 import DataTableFacetedFilter from '@app/components/DataTable/components/DataTableFacetedFilter';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@app/components/Select/Select';
+import { HTMLAttributes, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { useDebounce } from '@app/hooks/useDebounce';
+import { createQueryString, ExtendedColumnDef } from '@app/components/DataTable/DataTable.utils';
+import { useNavigate } from 'react-router-dom';
 
-interface DataTableAdvancedToolbarProps<TData> extends React.HTMLAttributes<HTMLDivElement> {
+interface DataTableAdvancedToolbarProps<TData> extends HTMLAttributes<HTMLDivElement> {
   table: Table<TData>;
-  filterFields?: DataTableFilterField<TData>[];
 }
 
 const DataTableAdvancedToolbar = <TData,>({
   table,
-  filterFields = [],
   children,
   className,
   ...props
 }: DataTableAdvancedToolbarProps<TData>) => {
-  const [searchParams, setSearchParams] = React.useState(new URLSearchParams(window.location.search));
+  const [searchParams, setSearchParams] = useState(new URLSearchParams(window.location.search));
+  const [filterFields, setFilterFields] = useState<DataTableFilterField<TData>[]>([]);
   const isFiltered = table.getState().columnFilters.length > 0;
+  const [searchValue, setSearchValue] = useState('');
+  const debouncedSearchValue = useDebounce(searchValue, 500);
+  const navigate = useNavigate();
 
-  // Memoize computation of searchableColumns and filterableColumns
-  const { searchableColumns, filterableColumns } = React.useMemo(() => {
+  useEffect(() => {
+    const fields: SetStateAction<DataTableFilterField<any>[]> = [];
+    const columns = table.getAllColumns();
+    columns?.forEach(column => {
+      const columnDef = column.columnDef as ExtendedColumnDef<any>;
+      if (columnDef.accessorKey) {
+        fields.push({
+          label: columnDef.label ?? columnDef.accessorKey,
+          value: columnDef.accessorKey,
+        });
+      }
+    });
+    setFilterFields(fields);
+  }, [table]);
+
+  useEffect(() => {
+    const newSearchParams = createQueryString({ search: debouncedSearchValue });
+    navigate(`${location.pathname}?${newSearchParams}`, { replace: true });
+  }, [debouncedSearchValue]);
+
+  const { searchableColumns, filterableColumns } = useMemo(() => {
     return {
       searchableColumns: filterFields.filter(field => !field.options),
       filterableColumns: filterFields.filter(field => field.options),
     };
   }, [filterFields]);
 
-  const options = React.useMemo<DataTableFilterOption<TData>[]>(() => {
+  const options = useMemo<DataTableFilterOption<TData>[]>(() => {
     return filterFields.map(field => {
       return {
         id: crypto.randomUUID(),
@@ -49,7 +72,7 @@ const DataTableAdvancedToolbar = <TData,>({
     });
   }, [filterFields]);
 
-  const initialSelectedOptions = React.useMemo(() => {
+  const initialSelectedOptions = useMemo(() => {
     return options
       .filter(option => searchParams.has(option.value as string))
       .map(option => {
@@ -64,11 +87,11 @@ const DataTableAdvancedToolbar = <TData,>({
       });
   }, [options, searchParams]);
 
-  const [selectedOptions, setSelectedOptions] = React.useState<DataTableFilterOption<TData>[]>(initialSelectedOptions);
-  const [openFilterBuilder, setOpenFilterBuilder] = React.useState(initialSelectedOptions.length > 0 || false);
-  const [openCombobox, setOpenCombobox] = React.useState(false);
+  const [selectedOptions, setSelectedOptions] = useState<DataTableFilterOption<TData>[]>(initialSelectedOptions);
+  const [openFilterBuilder, setOpenFilterBuilder] = useState(initialSelectedOptions.length > 0 || false);
+  const [openCombobox, setOpenCombobox] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handlePopState = () => {
       setSearchParams(new URLSearchParams(window.location.search));
     };
@@ -83,7 +106,7 @@ const DataTableAdvancedToolbar = <TData,>({
   }
 
   return (
-    <div className={cn('flex w-full flex-col space-y-2.5 overflow-auto pl-3 pr-3 pt-3', className)} {...props}>
+    <div className={cn('flex w-full flex-col space-y-2.5 overflow-auto p-2 pt-4', className)} {...props}>
       <div className="items-center">
         <div className="float-left flex items-center gap-2">
           <div className="flex items-center space-x-2">
@@ -104,19 +127,17 @@ const DataTableAdvancedToolbar = <TData,>({
               </SelectContent>
             </Select>
           </div>
-          {searchableColumns.length > 0 &&
-            searchableColumns.map(
-              column =>
-                table.getColumn(column.value ? String(column.value) : '') && (
-                  <Input
-                    key={String(column.value)}
-                    placeholder={column.placeholder}
-                    value={(table.getColumn(String(column.value))?.getFilterValue() as string) ?? ''}
-                    onChange={event => table.getColumn(String(column.value))?.setFilterValue(event.target.value)}
-                    className="h-8 w-40 lg:w-64"
-                  />
-                )
-            )}
+          {searchableColumns.length > 0 && (
+            <div className="relative">
+              <i className="fas fa-search fa-sm absolute left-3 top-1/2 -translate-y-1/2 transform text-gray-400"></i>
+              <Input
+                placeholder="Search"
+                value={searchValue}
+                onChange={event => setSearchValue(event.target.value)}
+                className="h-8 w-40 rounded-md border pl-10 lg:w-64"
+              />
+            </div>
+          )}
           {filterableColumns.length > 0 &&
             filterableColumns.map(
               column =>
