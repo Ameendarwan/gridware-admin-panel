@@ -1,0 +1,16 @@
+# IDE
+.vscode/
+.idea/
+
+# dependencies
+node_modules/
+package-lock.json
+
+# artifacts
+test-results/
+playwright-report/
+
+# data
+
+apqpData1.json
+context/

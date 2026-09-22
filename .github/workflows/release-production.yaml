@@ -1,0 +1,219 @@
+name: Release Production
+on:
+  workflow_dispatch:
+    inputs:
+      tag-rc-name:
+        description: '⬜ TAG-RC-NAME: This field is mandatory when promoting to production. Format: vX.Y.Z-rcN'
+        required: true
+        type: string
+        default: ''
+
+jobs:
+  prepare-version:
+    name: Automatically generate version
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      version: ${{ steps.set_version.outputs.version }}
+      sha: ${{ steps.resolve_commit.outputs.sha }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check Tag Format
+        run: |
+          tag=${{ inputs.tag-rc-name }}
+          if [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-rc[0-9]+$ ]]; then
+            echo "✅ Tag format is correct."
+          else
+            echo "❌ Tag format is incorrect. Expected: vX.Y.Z-rcN"
+            exit 1
+          fi
+
+      - name: Resolve commit from tag-rc-name
+        id: resolve_commit
+        run: |
+          TAG_SHA=$(git rev-list -n 1 ${{ inputs.tag-rc-name }})
+          echo "sha=$TAG_SHA" >> $GITHUB_OUTPUT
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ steps.resolve_commit.outputs.sha }}
+
+
+      - name: Fetch all tags
+        run: git fetch --tags --force
+
+      - name: Perform semantic version release
+        uses: paulhatch/semantic-version@v5.4.0
+        id: semantic_version
+        with:
+          tag_prefix: 'v'
+          major_pattern: 'major'
+          minor_pattern: 'feat'
+          version_format: 'v${major}.${minor}.${patch}'
+          user_format_type: 'csv'
+          bump_each_commit: false
+          search_commit_body: true
+          bump_each_commit_patch_pattern: false
+          debug: true
+
+      - name: Rollback Production & Delete GitHub Release and Tag if Exists
+        id: check_tag_production
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          version="${{ steps.semantic_version.outputs.version }}"
+
+          echo "Checking if tag $version exists in remote repo..."
+
+          all_tags=$(git ls-remote --tags origin | awk '{print $2}' | sed 's|refs/tags/||')
+
+          if echo "$all_tags" | grep -Fxq "$version"; then
+            echo "Tag $version already exists. Deleting GitHub release and tag..."
+
+            release_id=$(gh release view "$version" --json id -q .id || true)
+            if [ -n "$release_id" ]; then
+              gh release delete "$version" --yes
+              echo "GitHub release $version deleted."
+            else
+              echo "No GitHub release found for $version."
+            fi
+            git tag -d "$version" || true
+            git push origin ":refs/tags/$version" || true
+            echo "Git tag $version deleted from local and remote."
+          else
+            echo "Tag $version not found in remote. No need to delete."
+          fi
+
+      - name: Set version
+        id: set_version
+        run: |
+          if [ -n "${{ steps.semantic_version.outputs.version }}" ]; then
+            echo ${{ steps.semantic_version.outputs.version }}
+            echo "version=${{ steps.semantic_version.outputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "No version generated"
+            exit 1
+          fi
+
+      - name: Print debug
+        run: |
+          if [ -n "${{ steps.semantic_version.outputs.version }}" ]; then
+            echo ${{ steps.semantic_version.outputs.debug_output }}
+          fi
+
+  prepare-release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    needs: prepare-version
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get Token Github
+        id: get-token-github
+        uses: actions/create-github-app-token@v1
+        with:
+          # required
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PEM_FILE }}
+          owner: 'gridware'
+
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          custom_tag: ${{ needs.prepare-version.outputs.version }}
+          tag_prefix: ''
+          commit_sha: >-
+            ${{ needs.prepare-version.outputs.sha }}
+          github_token: ${{ steps.get-token-github.outputs.token }}
+          create_annotated_tag: true
+
+      - name: Capture current timestamp
+        id: now
+        run: echo "timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_OUTPUT
+
+      - name: Find previous stable tag before rollback target
+        env:
+          GH_TOKEN: ${{ steps.get-token-github.outputs.token }}
+        id: last_stable_tag
+        run: |
+          set -eo pipefail
+          git fetch --tags --force
+          rollback_target="${{ inputs.tag-rc-name }}"
+
+          sha=$(git rev-parse "$rollback_target")
+          echo "Rollback target: $rollback_target → $sha"
+
+          found=0
+          prev_tag=""
+          rollback_semver=$(echo "$rollback_target" | sed -E 's/^v//; s/-.*//')
+
+          for tag in $(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$'); do
+            tag_semver=$(echo "$tag" | sed -E 's/^v//')
+            if [ "$tag_semver" \< "$rollback_semver" ]; then
+              prev_tag="$tag"
+              found=1
+              break
+            fi
+          done
+
+          if [[ "$found" -eq 1 && -n "$prev_tag" ]]; then
+            prev_tag_sha=$(git rev-list -n 1 "$prev_tag")
+            echo "Found previous stable tag: $prev_tag → $prev_tag_sha"
+            echo "tag=$prev_tag" >> $GITHUB_OUTPUT
+            echo "sha=$sha" >> $GITHUB_OUTPUT
+          else
+            echo "No previous stable tag found before $rollback_target"
+            echo "tag=" >> $GITHUB_OUTPUT
+            echo "sha=$sha" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate changelog manually
+        env:
+          GH_TOKEN: ${{ steps.get-token-github.outputs.token }}
+        run: |
+          git fetch --tags --force
+          echo "## Release Metadata" > changelog.md
+          echo "- Triggered by: @${{ github.actor }}" >> changelog.md
+          echo "- Triggered at: ${{ steps.now.outputs.timestamp }}" >> changelog.md
+          echo "- Workflow run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> changelog.md
+          echo "- Ref: \`${{ inputs.tag-rc-name }}\`" >> changelog.md
+          echo "" >> changelog.md
+          echo "## What's Changed" >> changelog.md
+          if [ -n "${{ steps.last_stable_tag.outputs.tag }}" ]; then
+            git log "${{ steps.last_stable_tag.outputs.tag }}..${{ needs.prepare-version.outputs.version }}" --merges --pretty=format:"%H|%s|%an" | while IFS="|" read -r commit_hash commit_msg author; do
+              if [[ "$commit_msg" =~ ^Merge\ pull\ request\ \#([0-9]+)\ from\ .+ ]]; then
+                pr_number="${BASH_REMATCH[1]}"
+                pr_title=$(gh pr view "$pr_number" --json title -q .title 2>/dev/null || true)
+                [ -z "$pr_title" ] && pr_title="PR #$pr_number"
+                echo "- ${pr_title} by @${author} in [#${pr_number}](https://github.com/${{ github.repository }}/pull/${pr_number})" >> changelog.md
+              fi
+            done
+            echo "" >> changelog.md
+            echo "## Full Changelog" >> changelog.md
+            echo "[${{ steps.last_stable_tag.outputs.tag }}...${{ needs.prepare-version.outputs.version }}](https://github.com/${{ github.repository }}/compare/${{ steps.last_stable_tag.outputs.tag }}...${{ needs.prepare-version.outputs.version }})" >> changelog.md
+          else
+            echo "_First stable release_" >> changelog.md
+          fi
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2.2.1
+        with:
+          prerelease: false
+          tag_name: ${{ needs.prepare-version.outputs.version }}
+          generate_release_notes: false
+          make_latest: true
+          token: ${{ steps.get-token-github.outputs.token }}
+          body_path: changelog.md
+          draft: false

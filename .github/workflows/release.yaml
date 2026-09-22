@@ -1,0 +1,118 @@
+name: Build and Push ECR MultiArch
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - v*
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited
+    branches:
+      - master
+
+jobs:
+  dev-release:
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/master') || (github.event_name == 'pull_request' && github.base_ref == 'master')
+    uses: gridware/reusable-workflows/.github/workflows/build-push-scan-frontend.yaml@v1.1.0
+    with:
+      node-version: 20
+      service-name: dst-webmanager
+      aws-region: us-west-2
+      aws-account: ${{ vars.SANDBOX_ACCOUNT_ID }}
+      aws-role-to-assume: arn:aws:iam::${{ vars.SANDBOX_ACCOUNT_ID }}:role/dev-do-backend-ci-role
+      docker-path: ./Dockerfile
+      cache-from: type=registry,ref=${{ vars.SANDBOX_ACCOUNT_ID }}.dkr.ecr.us-west-2.amazonaws.com/dst-webmanager:cache
+      cache-to: mode=max,image-manifest=true,oci-mediatypes=true,type=registry,ref=${{ vars.SANDBOX_ACCOUNT_ID }}.dkr.ecr.us-west-2.amazonaws.com/dst-webmanager:cache
+      build-args: |
+        ECR_REGISTRY=${{ vars.SANDBOX_ACCOUNT_ID }}.dkr.ecr.us-west-2.amazonaws.com/docker-hub/library/
+        BASE_IMAGE=nginx:stable-alpine
+    secrets:
+      APP_ID: ${{ secrets.APP_ID }}
+      APP_PEM_FILE: ${{ secrets.APP_PEM_FILE }}
+      env-vars: |
+        VITE_REACT_APP_MAPBOX_KEY=${{ secrets.DEV_VITE_REACT_APP_MAPBOX_KEY }}
+        VITE_REACT_APP_API_URL=${{ secrets.DEV_VITE_REACT_APP_API_URL }}
+        VITE_REACT_APP_AUTH0_DOMAIN=${{ secrets.DEV_VITE_REACT_APP_AUTH0_DOMAIN }}
+        VITE_REACT_APP_AUTH0_CLIENT_ID=${{ secrets.DEV_VITE_REACT_APP_AUTH0_CLIENT_ID }}
+        VITE_VERSION=${GITHUB_SHA::7}
+
+  staging-release:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && contains(github.ref, '-')
+    uses: gridware/reusable-workflows/.github/workflows/build-push-scan-frontend.yaml@v1.1.0
+    with:
+      node-version: 20
+      service-name: dst-webmanager
+      aws-region: us-west-2
+      aws-account: ${{ vars.SANDBOX_ACCOUNT_ID }}
+      aws-role-to-assume: arn:aws:iam::${{ vars.SANDBOX_ACCOUNT_ID }}:role/dev-do-backend-ci-role
+      docker-path: ./Dockerfile
+      cache-from: type=registry,ref=${{ vars.SANDBOX_ACCOUNT_ID }}.dkr.ecr.us-west-2.amazonaws.com/dst-webmanager:cache
+      cache-to: mode=max,image-manifest=true,oci-mediatypes=true,type=registry,ref=${{ vars.SANDBOX_ACCOUNT_ID }}.dkr.ecr.us-west-2.amazonaws.com/dst-webmanager:cache
+      build-args: |
+        ECR_REGISTRY=${{ vars.SANDBOX_ACCOUNT_ID }}.dkr.ecr.us-west-2.amazonaws.com/docker-hub/library/
+        BASE_IMAGE=nginx:stable-alpine
+    secrets:
+      APP_ID: ${{ secrets.APP_ID }}
+      APP_PEM_FILE: ${{ secrets.APP_PEM_FILE }}
+      env-vars: |
+        VITE_REACT_APP_MAPBOX_KEY=${{ secrets.STAGING_VITE_REACT_APP_MAPBOX_KEY }}
+        VITE_REACT_APP_API_URL=${{ secrets.STAGING_VITE_REACT_APP_API_URL }}
+        VITE_REACT_APP_AUTH0_DOMAIN=${{ secrets.STAGING_VITE_REACT_APP_AUTH0_DOMAIN }}
+        VITE_REACT_APP_AUTH0_CLIENT_ID=${{ secrets.STAGING_VITE_REACT_APP_AUTH0_CLIENT_ID }}
+        VITE_VERSION=${{ github.ref_name }}
+
+  staging-audit-release:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && contains(github.ref, '_')
+    uses: gridware/reusable-workflows/.github/workflows/build-push-scan-frontend.yaml@v1.1.0
+    with:
+      node-version: 20
+      service-name: dst-webmanager
+      aws-region: us-west-2
+      aws-account: ${{ vars.SANDBOX_ACCOUNT_ID }}
+      aws-role-to-assume: arn:aws:iam::${{ vars.SANDBOX_ACCOUNT_ID }}:role/dev-do-backend-ci-role
+      docker-path: ./Dockerfile
+      cache-from: type=registry,ref=${{ vars.SANDBOX_ACCOUNT_ID }}.dkr.ecr.us-west-2.amazonaws.com/dst-webmanager:cache
+      cache-to: mode=max,image-manifest=true,oci-mediatypes=true,type=registry,ref=${{ vars.SANDBOX_ACCOUNT_ID }}.dkr.ecr.us-west-2.amazonaws.com/dst-webmanager:cache
+      build-args: |
+        ECR_REGISTRY=${{ vars.SANDBOX_ACCOUNT_ID }}.dkr.ecr.us-west-2.amazonaws.com/docker-hub/library/
+        BASE_IMAGE=nginx:stable-alpine
+    secrets:
+      APP_ID: ${{ secrets.APP_ID }}
+      APP_PEM_FILE: ${{ secrets.APP_PEM_FILE }}
+      env-vars: |
+        VITE_REACT_APP_MAPBOX_KEY=${{ secrets.STAGING_VITE_REACT_APP_MAPBOX_KEY }}
+        VITE_REACT_APP_API_URL=https://dst-v2-audit.gridware-stage.io/admin/dashboard/api/v1
+        VITE_REACT_APP_AUTH0_DOMAIN=${{ secrets.STAGING_VITE_REACT_APP_AUTH0_DOMAIN }}
+        VITE_REACT_APP_AUTH0_CLIENT_ID=${{ secrets.STAGING_VITE_REACT_APP_AUTH0_CLIENT_ID }}
+        VITE_VERSION=${{ github.ref_name }}
+
+  prod-release:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-') && !contains(github.ref, '_')
+    uses: gridware/reusable-workflows/.github/workflows/build-push-scan-frontend.yaml@v1.1.0
+    with:
+      node-version: 20
+      service-name: dst-webmanager
+      aws-region: us-west-2
+      aws-account: ${{ vars.PROD_ACCOUNT_ID }}
+      aws-role-to-assume: arn:aws:iam::${{ vars.PROD_ACCOUNT_ID }}:role/prod-do-backend-ci-role
+      docker-path: ./Dockerfile
+      cache-from: type=registry,ref=${{ vars.PROD_ACCOUNT_ID }}.dkr.ecr.us-west-2.amazonaws.com/dst-webmanager:cache
+      cache-to: mode=max,image-manifest=true,oci-mediatypes=true,type=registry,ref=${{ vars.PROD_ACCOUNT_ID }}.dkr.ecr.us-west-2.amazonaws.com/dst-webmanager:cache
+      build-args: |
+        ECR_REGISTRY=${{ vars.PROD_ACCOUNT_ID }}.dkr.ecr.us-west-2.amazonaws.com/docker-hub/library/
+        BASE_IMAGE=nginx:stable-alpine
+    secrets:
+      APP_ID: ${{ secrets.APP_ID }}
+      APP_PEM_FILE: ${{ secrets.APP_PEM_FILE }}
+      # To add new secrets for your application, please help to ping DevOps and provide the value for the same, we will configure this in our Github Secrets
+      env-vars: |
+        VITE_REACT_APP_MAPBOX_KEY=${{ secrets.PROD_VITE_REACT_APP_MAPBOX_KEY }}
+        VITE_REACT_APP_API_URL=${{ secrets.PROD_VITE_REACT_APP_API_URL }}
+        VITE_REACT_APP_AUTH0_DOMAIN=${{ secrets.PROD_VITE_REACT_APP_AUTH0_DOMAIN }}
+        VITE_REACT_APP_AUTH0_CLIENT_ID=${{ secrets.PROD_VITE_REACT_APP_AUTH0_CLIENT_ID }}
+        VITE_VERSION=${{ github.ref_name }}

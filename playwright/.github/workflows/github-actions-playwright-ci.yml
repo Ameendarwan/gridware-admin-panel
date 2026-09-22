@@ -1,0 +1,101 @@
+name: Playwright CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - '**-e-commerece'
+  workflow_dispatch:
+    inputs:
+      run-regression:
+        description: "Trigger regression workflow manually"
+        required: false
+        default: "false"
+
+jobs:
+
+  # ------------------ MASTER BRANCH ------------------
+  master-run:
+    if: github.ref == 'refs/heads/master'
+    name: Master Run
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:focal
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run E2E Tests
+        run: npx cucumber-js
+
+      - name: Upload Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-master-results
+          path: test-results/**
+
+
+  # ------------------ PR E2E JOB ------------------
+  pr-e2e:
+    name: PR E2E Tests
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:focal
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run E2E tests
+        run: npx cucumber-js
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-pr-results
+          path: test-results/**
+
+
+  # ------------------ MANUAL REGRESSION ------------------
+  regression:
+    if: github.event.inputs.run-regression == 'true'
+    name: Regression Run
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:focal
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run regression tests
+        run: npx cucumber-js
+
+      - name: Upload regression results
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-e2e-results
+          path: test-results/**

@@ -1,0 +1,11 @@
+{
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "files.trimTrailingWhitespace": true,
+  "typescript.validate.enable": true,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "sonarlint.connectedMode.project": {
+    "connectionId": "https-sonarqube-gridware-io-",
+    "projectKey": "gridware_gridware-dst-admin-panel_78e3d8fb-2707-453d-99b3-8701724bcce7"
+  }
+}

@@ -1,0 +1,46 @@
+[
+  {
+    "id": "e2037d12-edc9-4da8-b17b-6d8b6d4a6b65",
+    "name": "CUST-LARRY",
+    "deployments": [
+      {
+        "id": "2e7d5b3f-9c42-4a8b-bf61-3a9d2c4e1f87",
+        "name": "TVal-0010",
+        "poles": [
+          {
+            "id": "7c8e3a51-2f04-4d99-81b0-6a5d1e349c2f",
+            "name": "Validation Test Pole 20",
+            "location": {
+              "latitude": 41.48216,
+              "longitude": -112.04851
+            }
+          },
+          {
+            "id": "3f2a7c94-1b6e-4c2f-88d3-9a7c6b5e0f21",
+            "name": "Validation Test Pole 21",
+            "location": {
+              "latitude": 41.48235,
+              "longitude": -112.04833
+            }
+          },
+          {
+            "id": "e4b9d7c2-8f16-4a4a-9123-cd1f607b2e48",
+            "name": "Validation Test Pole 22",
+            "location": {
+              "latitude": 41.48235,
+              "longitude": -112.04833
+            }
+          },
+          {
+            "id": "9c0a4d21-6bfb-4e2c-9e6a-0f4dbe89a3b3",
+            "name": "Validation Test Pole 24",
+            "location": {
+              "latitude": 41.48235,
+              "longitude": -112.04833
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,278 @@
+name: Playwright
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited
+    branches:
+      - master
+    # paths-ignore:
+    #   - '.github/**'
+
+  workflow_dispatch:
+    inputs:
+      run-regression:
+        description: "Trigger regression workflow manually"
+        required: false
+        default: "false"
+
+env:
+  BASE_URL: ${{ vars.BASE_URL }}
+  AUTH_EMAIL: ${{ vars.AUTH_EMAIL }}
+  AUTH_EMAIL_PASSWORD: ${{ secrets.AUTH_EMAIL_PASSWORD }}
+
+jobs:
+
+  # ------------------ PLAYWRIGHT JOB ------------------
+  playwright:
+    name: Playwright
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install dependencies
+        run: |
+          cd ./playwright
+          npm install
+
+      - name: Install playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Tailscale
+        uses: tailscale/github-action@v3
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+          statedir: /tmp/tailscale-state/
+          tags: tag:devops
+          use-cache: 'true'
+
+      - name: Run E2E Tests
+        run: npx cucumber-js --format json:results.json
+        working-directory: playwright
+
+      - name: Upload Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-results
+          path: |
+            playwright/results.json
+            playwright/screenshot*.png
+
+      - name: Get Token Github
+        if: always()
+        id: get-token-github
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PEM_FILE }}
+          owner: gridware
+
+      - name: Comment Cucumber summary to PR
+        uses: actions/github-script@v7
+        if: always()
+        env:
+          RESULTS_PATH: playwright/results.json
+        with:
+          github-token: ${{ steps.get-token-github.outputs.token }}
+          script: |
+            const fs = require('fs');
+
+            const path = process.env.RESULTS_PATH;
+            if (!fs.existsSync(path)) {
+              core.warning(`Results file not found: ${path}`);
+              return;
+            }
+
+            let data;
+            try {
+              data = JSON.parse(fs.readFileSync(path, 'utf8'));
+            } catch (e) {
+              core.setFailed(`Cannot parse JSON results: ${e.message}`);
+              return;
+            }
+
+            let totalScenarios = 0;
+            let passed = 0;
+            let failed = 0;
+            let skipped = 0;
+            let featureCount = 0;
+            let totalDurationNs = 0;
+
+            const failedScenarios = [];
+            const allScenarios = [];
+
+            for (const feature of data) {
+              featureCount++;
+
+              const featureName = feature.name || feature.id || 'Unnamed feature';
+
+              for (const scenario of feature.elements || []) {
+                if (scenario.type !== 'scenario') continue;
+
+                totalScenarios++;
+
+                const scenarioName = scenario.name || scenario.id || 'Unnamed scenario';
+
+                const hookSteps =
+                  []
+                    .concat(scenario.before || [])
+                    .concat(scenario.after || [])
+                    .flatMap(h => h.steps || []);
+
+                const steps = (scenario.steps || []).concat(hookSteps);
+
+                let status = 'passed';
+
+                for (const s of steps) {
+                  if (!s.result) continue;
+                  if (typeof s.result.duration === 'number') {
+                    totalDurationNs += s.result.duration;
+                  }
+                  if (s.result.status === 'failed') {
+                    status = 'failed';
+                    break;
+                  }
+                  if (s.result.status === 'skipped' && status === 'passed') {
+                    status = 'skipped';
+                  }
+                }
+
+                if (status === 'failed') failed++;
+                else if (status === 'skipped') skipped++;
+                else passed++;
+
+                allScenarios.push({
+                  feature: featureName,
+                  scenario: scenarioName,
+                  status,
+                });
+
+                if (status === 'failed') {
+                  const failedStep =
+                    steps.find(s => s.result && s.result.status === 'failed') || {};
+                  const stepName =
+                    (failedStep.keyword || '') + (failedStep.name || '');
+
+                  failedScenarios.push({
+                    feature: featureName,
+                    scenario: scenarioName,
+                    step: stepName || 'Unknown step',
+                  });
+                }
+              }
+            }
+
+            const seconds = totalDurationNs ? (totalDurationNs / 1e9).toFixed(1) : null;
+
+            const title = 'Playwright test results';
+            const marker = '<!-- e2e-report-comment -->';
+
+            let body = `## ${title}\n\n`;
+
+            body += `**Summary**\n\n`;
+            body += `- Failed: **${failed}**\n`;
+            body += `- Passed: **${passed}**\n`;
+            body += `- Skipped: **${skipped}**\n`;
+            body += `- Total scenarios: **${totalScenarios}**\n\n`;
+
+            body += `**Details**\n\n`;
+            body += `- ${totalScenarios} scenarios in ${featureCount} features\n`;
+            if (seconds !== null) {
+              body += `- ${seconds} seconds\n`;
+            }
+            const commitTitle =
+              (context.payload.head_commit && context.payload.head_commit.message) ||
+              (context.payload.pull_request && context.payload.pull_request.title) ||
+              '';
+            const shortSha = (context.sha || '').substring(0, 7);
+            if (commitTitle || shortSha) {
+              body += `- ${commitTitle.split('\n')[0]}${shortSha ? ` (${shortSha})` : ''}\n`;
+            }
+            body += `\n`;
+
+            if (failedScenarios.length) {
+              body += `### Failed scenarios\n\n`;
+              for (const f of failedScenarios) {
+                body += `- ${f.feature} → ${f.scenario} → ${f.step}\n`;
+              }
+              body += `\n`;
+            }
+
+            if (allScenarios.length) {
+              body += `<details>\n<summary>All scenarios</summary>\n\n`;
+              for (const s of allScenarios) {
+                body += `- [${s.status.toUpperCase()}] ${s.feature} → ${s.scenario}\n`;
+              }
+              body += `\n</details>\n`;
+            }
+
+            body += `\n${marker}\n`;
+
+            const prNumber =
+              context.payload.pull_request && context.payload.pull_request.number;
+
+            if (!prNumber) {
+              core.info('No pull request context, writing to job summary only');
+              await core.summary
+                .addHeading(title)
+                .addRaw(body.replace(marker, ''))
+                .write();
+              return;
+            }
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+
+            const existing = comments.find(
+              c => c.body && c.body.includes(marker)
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body,
+              });
+            }
+  # ------------------ SUMMARY JOB ------------------
+  summary:
+    name: Summary
+    runs-on: ubuntu-latest
+    needs: playwright
+    if: always()
+
+    steps:
+      - name: Generate Summary
+        run: |
+          echo "## Playwright Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Status: **${{ needs.playwright.result }}**" >> $GITHUB_STEP_SUMMARY
+          echo "- Branch: \`${{ github.ref }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- PR: #${{ github.event.number }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Workflow run:" >> $GITHUB_STEP_SUMMARY
+          echo "  ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ needs.playwright.result }}" = "failure" ]; then
+            exit 1
+          fi

@@ -1,0 +1,33 @@
+{
+  "name": "gridware-automation-suite",
+  "version": "1.0.0",
+  "description": "Gridware Automation Suite",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint ./",
+    "test:e2e": "playwright test --workers=1 --grep @e2e1",
+    "test:api": "playwright test --workers=1 --grep @api",
+    "show-trace": "playwright show-trace --"
+  },
+  "author": "Muhammad Ashar Ijaz",
+  "license": "ISC",
+  "devDependencies": {
+    "@cucumber/cucumber": "^11.3.0",
+    "@faker-js/faker": "8",
+    "@playwright/test": "^1.51.0",
+    "@types/node": "^20.8.0",
+    "@typescript-eslint/eslint-plugin": "^4.17.0",
+    "@typescript-eslint/parser": "^4.17.0",
+    "eslint": "^7.21.0",
+    "mailslurp-client": "^15.13.3",
+    "pdf.js-extract": "^0.2.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^4.9.5",
+    "xlsx": "^0.18.5"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "es6-promise": "^4.2.8",
+    "playwright": "^1.54.2"
+  }
+}
